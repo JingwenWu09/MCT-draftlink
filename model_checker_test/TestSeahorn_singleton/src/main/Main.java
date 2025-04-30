@@ -9,40 +9,12 @@ import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-//	public static String dockerName = "";
-//	public static String dockerDir = "";
 	public static void main(String args[]) throws IOException, InterruptedException {
-
-	//		String commandSelect = "docker ps -a";
-	//		ProcessTerminal pt = new ProcessTerminal();
-	//		List<String> execLines = pt.testProcessThreadNotLimit(commandSelect);
-	//		String[] properties = execLines.get(1).split("   ");
-	////		System.out.println(properties[properties.length-1].trim());
-	//
-	//		dockerName = properties[properties.length-1].trim();
-	//		dockerDir = "/home/elowen/桌面";
-
-			TypeTest type = new TypeTest();
-			type.testType("/home/elowen/桌面/mct-result-multi-config/dataflow/CSElimination");
-			ProcessTerminal pt = new ProcessTerminal();
-			pt.killSeahornThread();
-
-			TypeTest type1 = new TypeTest();
-			type1.testType("/home/elowen/桌面/mct-result-multi-config/dataflow/DataFlowSR");
-			ProcessTerminal pt1 = new ProcessTerminal();
-			pt1.killSeahornThread();
-
-			TypeTest type2 = new TypeTest();
-			type2.testType("/home/elowen/桌面/mct-result-multi-config/dataflow/ConstantFolding");
-			ProcessTerminal pt2 = new ProcessTerminal();
-			pt2.killSeahornThread();
-
-//			type.filterTimeout("/home/elowen/桌面/mct-result-multi-config/Invariant-elowen");
-//			copySeahornFile("/home/elowen/桌面/mct-result-multi-config/Invariant-jing", "/home/elowen/桌面/mct-result-multi-config/Invariant");
-//		deleteOutputDir("/home/elowen/桌面/mct-result-multi-config/");
-//		deleteSeahornFile("/home/elowen/桌面/mct-result-multi-config/dataflow");
-			
-		System.out.println("end!!!");
+		String testDir = "";
+		TypeTest type = new TypeTest();
+		type.testType(testDir);
+		ProcessTerminal pt = new ProcessTerminal();
+		pt.killSeahornThread();
 	}
 
 	public static void copySeahornFile(String sourcedir, String targetdir) throws IOException, InterruptedException {

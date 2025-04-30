@@ -4,21 +4,23 @@ the usefulness of optimization-guided equivalence transformations for validating
 
 <img src="./workflow.jpg" alt="Workflow image" width="600" />
 
-We use gcc regression testcases as seed programs. 
+We use GCC regression test cases as seed programs. 
 
 # Structure of the project
 
 ```
-Core operations is under the main folder:
+text<br>model_checker_test/<br> ├── TestCBMC # CBMC workflow implementation<br> │ ├── Main/Main.java # CBMC entry point<br> │ └── Tools/TestCBMC.java# CBMC command executor<br> ├── TestCPAchecker # CPAchecker workflow implementation<br> │ ├── Main/Main.java # CPAchecker entry point<br> │ └── Tools/TestCPAchecker.java<br> └── TestSeahorn_singleton # SeaHorn workflow implementation<br> ├── Main/Main.java # SeaHorn entry point<br> └── Tools/TestSeahorn.java<br><br>test_case_generation/<br> ├── ASTInformation # AST analysis<br> ├── Condition # Conditional-structure transformations<br> ├── DataFlow # Data-flow transformations<br> └── test/<br> └── Mutate.java # Entry point for test-case generation<br>
+
+Core operations are under the main folder:
 |-- model_checker_test
 | |-- TestCBMC # The CBMC test workflow implementation
-| | |-- Main/Main.java # The entrance of CBMC testing
+| | |-- Main/Main.java # The CBMC testing entrance
 | | |-- Tools/TestCBMC.java # The CBMC command execution implementation
-| |-- TestCPAchecker # The CPAchecker test workflow implementation
-| | |-- Main/Main.java # The entrance of CPAchecker testing
+| |-- TestCPAchecker # The CPAchecker testing workflow implementation
+| | |-- Main/Main.java # The CPAchecker testing entrance
 | | |-- Tools/TestCPAchecker.java # The CPAchecker command execution implementation
-| |-- TestSeahorn_singleton # The SeaHorn test workflow implementation
-| | |-- Main/Main.java # The entrance of SeaHorn testing
+| |-- TestSeahorn_singleton # The SeaHorn testing workflow implementation
+| | |-- Main/Main.java # The SeaHorn testing entrance
 | | |-- Tools/TestSeahorn.java # The SeaHorn command execution implementation
 
 |-- test_case_generation
@@ -33,17 +35,17 @@ Core operations is under the main folder:
 
 ### Step 1: Install necessary packages
 
-- Ubuntu >= 20
-- Java >= 17
+- Ubuntu 20+
+- Java 17+
 - CPAchecker (Please install it following [CPAchecker](https://cpachecker.sosy-lab.org/download.php))
 - CBMC (Please install it following [CBMC](https://github.com/diffblue/cbmc))
 - SeaHorn (Please install it following [SeaHorn](https://github.com/seahorn/seahorn))
-- Clang >= 14
-- Add file `libsigar-amd64-linux.so` into `/usr/lib` and `/usr/lib64`
+- Clang 14+
+- Copy file `libsigar-amd64-linux.so` into `/usr/lib` and `/usr/lib64`
 
 ### Step 2: Test clang ast analysis functionality
 
-Assuming there is a program test.c:
+Assume the following program, test.c:
 ```
 #include <stdio.h>
 
@@ -93,11 +95,16 @@ The command `clang -fsyntax-only -Xclang -ast-dump test.c -w -Xanalyzer -analyze
           `-DeclRefExpr 0x55f86a0e18a0 <col:25> 'int' lvalue Var 0x55f86a0e1780 'y' 'int'
 ```
 ### Step 3: Update the corresponding folder information
-In the `test_case_generation/src/test/Mutate.java`, you must manually set `sourceDir` and `destDir` in Mutate.java to match your local folder paths before running. The string `sourceDir` is the absolute path of the folder that contains all seed programs, while the String `destDir` is the absolute path of the folder that includes all test programs (i.e., both the initial and transformed programs).After generating test cases, we verify the correctness of each model checker by executing the corresponding test workflows located in the designated directories. For example, in the `model_checker_test/TestCPAchecker/src/main/Main.java`, the String `testDir` is the absolute path of the folder that contains all transformed folders about one transformation method. Finally, within the `DestDir`, structure of each subfolder is following:
+Edit `test_case_generation/src/test/Mutate.java` and set the absolute paths for `sourceDir` (the folder with all seed programs) and `destDir` (the folder for all generated test programs).
+After that, edit `model_checker_test/TestCPAchecker/src/main/Main.java` and set the absolute paths for `testDir` (i.e., destDir).
+Note that each transformation method generates its own `destDir`.
+
+Within destDir, each subfolder has the structure:
 ```
-|-- filename-based folder: includes an initial program, its transformed programs and some txt output files.
+|-- <seed-name>/
 | | -- initial_program.c
 | | -- initial_transformed.c
+| | -- ...
 | | -- cpachecker-result.txt
 | | -- cbmc-result.txt
 | | -- seahorn-result.txt
@@ -106,7 +113,12 @@ In the `test_case_generation/src/test/Mutate.java`, you must manually set `sourc
 For the same model checker, testing different configurations will produce separate `result.txt` files. You can change or expand the testing configuration or command in `test_case_generation/.../src/tools/TestSpecificTool.java`.
 
 ### Step 4: Run the project
-Run the `Mutate.java` in the `test_case_generation/src/test/` to generate test cases from seed programs, and then run `model_checker_test/TestSpecificTool(e.g. TestCBMC)/src/main/Main.java` to generate executed verification results in different configurations. 
+1. Run `Mutate.java` in `test_case_generation/src/test/` to generate test cases.
+2. Execute the desired workflow, e.g.:
+```
+cd model_checker_test/TestCBMC/src/main
+java Main
+```
 
 # Find Bugs
-We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have compiled the issue records into this folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report).
+We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detected 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have consolidated the issue records in the folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report).

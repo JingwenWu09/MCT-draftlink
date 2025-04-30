@@ -10,18 +10,17 @@ We use gcc regression testcases as seed programs.
 
 ```
 Core operations is under the main folder:
-|-- astinfo # The ast analysis implementation directory
-|-- mutations # The tailored code genertion strategies and mutate implementation directory
-|-- csmithgen # The seed program generation implementation directory using Csmith
-| |-- SwarmGen.java  # Updating configurations of Csmith
-|-- testcompareresults # The programs testing execution and their results comparison implementation directory
-|-- objectoperation # The common operations targeted different datatype implemention directory
-|-- common # The common information extraction functions implemention directory
-|-- overall # The overall testing process execution implemention directory
-| |-- Main.java  # The entrance of overall testing process
-|-- processmemory # The process dealing and real-time memory check implemention directory
-|-- sanitizer # The undefined behaviour filtering implemention directory
-|-- utility # The java beans of overall testing process
+|-- model_checker_test
+| |-- TestCBMC # The cbmc test workflow implementation
+| |-- TestCPAchecker # The cpachecker test workflow implementation
+| |-- TestSeahorn_singleton # The seahorn test workflow implementation
+
+|-- test_case_generation
+| |-- ASTInformation # The ast analysis implementation directory
+| |-- Condition # The conditional structures transformation implementation directory
+| |-- DataFlow # The conditional dataflow transformation implementation directory
+| |-- test # The overall testing process execution implemention directory
+| | |-- Mutate.java  # The entrance of test case generation process
 ```
 
 # Usage
@@ -88,7 +87,7 @@ The command `clang -fsyntax-only -Xclang -ast-dump test.c -w -Xanalyzer -analyze
           `-DeclRefExpr 0x55f86a0e18a0 <col:25> 'int' lvalue Var 0x55f86a0e1780 'y' 'int'
 ```
 ### Step 3: Update the corresponding folder information
-In the `/src/Overall/Main.java`, the string `swarmDir` is the absolute path of the folder that contains all seed programs generated using Csmith, while the String `muIndexPath` is the absolute path of the folder that includes all test programs (i.e., both the initial and transformed programs). Within the `muIndexPath`, structure of each subfolder is following:
+In the `/src/test/Mutate.java`, the string `swarmDir` is the absolute path of the folder that contains all seed programs generated using Csmith, while the String `muIndexPath` is the absolute path of the folder that includes all test programs (i.e., both the initial and transformed programs). Within the `muIndexPath`, structure of each subfolder is following:
 ```
 |-- random 
 | |-- block # Each block aligns a loop of the seed program.

@@ -12,32 +12,23 @@ import tools.*;
 
 public class Main {
 	public static void main(String args[]) throws IOException, InterruptedException {
+		String testDir = "";
 		TypeTest type = new TypeTest();
 
-		type.testType("/home/nicai/桌面/ConstantFolding", "ValueAnalysis");
+		type.testType(testDir, "ValueAnalysis");
 		System.out.println("end ValueAnalysis!");
 		
-		type.testType("/home/nicai/桌面/ConstantFolding", "PredicateAnalysis");
+		type.testType(testDir, "PredicateAnalysis");
 		System.out.println("end PredicateAnalysis!");
 		
-		type.testType("/home/nicai/桌面/ConstantFolding", "KInduction");
+		type.testType(testDir, "KInduction");
 		System.out.println("end kinduction!");
 		
-		type.testType("/home/nicai/桌面/ConstantFolding", "OverflowChecking");
+		type.testType(testDir, "OverflowChecking");
 		System.out.println("end OverflowChecking!");
 		
-		type.testType("/home/nicai/桌面/ConstantFolding", "SMGAnalysis");
+		type.testType(testDir, "SMGAnalysis");
 		System.out.println("end SMGAnalysis!");
-
-//		type.filterFalseFile("/home/nicai/桌面/mct-result-multi-config/Unswitching", "SMGAnalysis");
-//		deleteOutputDir("/home/nicai/桌面/Inversion");
-		
-//		CountResult cs = new CountResult();
-//		cs.countCPACheck("/home/nicai/桌面/Inversion", "cpachecker-SymbolicExecution.txt");
-
-//		copyResultFile("/home/nicai/桌面/If", "/home/nicai/桌面/mct-result-multi-config/If");
-		
-		System.out.println("end!!!");
 	}
 
 	public static void copyResultFile(String sourcedir, String targetdir) throws IOException, InterruptedException {

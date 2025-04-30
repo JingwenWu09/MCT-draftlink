@@ -2,7 +2,7 @@
 Based on the metamorphic testing paradigm, we explore
 the usefulness of optimization-guided equivalence transformations for validating software model checkers in this paper. In particular, we propose a general testing approach that involves four major steps: 1) perform program analysis to select particular code snippets that meet specific transformation conditions; 2) apply optimization-guided equivalence transformations to the selected code snippets to get new code snippets; 3) embed the equivalence relations between variables in the original and transformed code snippets as properties to be verified within the program (i.e., create effective test cases); 4) validate the test programs with the model checker and compare the actual verification results with the expected ones. If discrepancies are found, it indicates potential bugs in the software model checker. The detailed process is illustrated in the figure below. 
 
-<img src="./workflow.jpg" alt="Workflow image" width="600" />
+<img src="./work_flow.jpg" alt="Workflow image" width="600" />
 
 We use gcc regression testcases as seed programs. 
 
@@ -109,4 +109,4 @@ For the same model checker, testing different configurations will produce separa
 Run the `Mutate.java` in the `test_case_generation/src/test/` to generate test cases from seed programs, and then run `model_checker_test/TestSpecificTool(e.g. TestCBMC)/src/main/Main.java` to generate executed verification results in different configurations. 
 
 # Find Bugs
-We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have compiled the issue records into this folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/test_case_generation).
+We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have compiled the issue records into this folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report).

@@ -11,9 +11,15 @@ We use gcc regression testcases as seed programs.
 ```
 Core operations is under the main folder:
 |-- model_checker_test
-| |-- TestCBMC # The cbmc test workflow implementation
-| |-- TestCPAchecker # The cpachecker test workflow implementation
-| |-- TestSeahorn_singleton # The seahorn test workflow implementation
+| |-- TestCBMC # The CBMC test workflow implementation
+| | |-- Main/Main.java # The entrance of CBMC testing
+| | |-- Tools/TestCBMC.java # The CBMC command execution implementation
+| |-- TestCPAchecker # The CPAchecker test workflow implementation
+| | |-- Main/Main.java # The entrance of CPAchecker testing
+| | |-- Tools/TestCPAchecker.java # The CPAchecker command execution implementation
+| |-- TestSeahorn_singleton # The SeaHorn test workflow implementation
+| | |-- Main/Main.java # The entrance of SeaHorn testing
+| | |-- Tools/TestSeahorn.java # The SeaHorn command execution implementation
 
 |-- test_case_generation
 | |-- ASTInformation # The ast analysis implementation directory
@@ -97,9 +103,10 @@ In the `test_case_generation/src/test/Mutate.java`, you must manually set `sourc
 | | -- seahorn-result.txt
 
 ```
+同一个model checker，如果测试不同的配置，则会分别产生不同的result.txt文件，And you can change or expand the testing configuration or command in `test_case_generation/.../src/tools/TestSpecificTool.java)`.
 
 ### Step 4: Run the project
-Run the `Mutate.java` in the `test_case_generation/src/test/` to generate test cases from seed programs, and then run `model_checker_test/TestSpecificTool(e.g. TestCBMC)/src/main/Main.java` to generate executed verification results in different configurations. And you can change or expand the testing configuration or command in `./src/tools/TestSpecificTool(e.g. TestCBMC.java)`.
+Run the `Mutate.java` in the `test_case_generation/src/test/` to generate test cases from seed programs, and then run `model_checker_test/TestSpecificTool(e.g. TestCBMC)/src/main/Main.java` to generate executed verification results in different configurations. 
 
 # Find Bugs
 We conduct a preliminary evaluation of this approach on GCC and LLVM, and have successfully detected five incorrect optimization bugs.

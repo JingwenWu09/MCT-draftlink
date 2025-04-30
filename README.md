@@ -13,22 +13,22 @@ text<br>model_checker_test/<br> ├── TestCBMC # CBMC workflow implementatio
 
 Core operations are under the main folder:
 |-- model_checker_test
-| |-- TestCBMC # The CBMC test workflow implementation
-| | |-- Main/Main.java # The CBMC testing entrance
-| | |-- Tools/TestCBMC.java # The CBMC command execution implementation
-| |-- TestCPAchecker # The CPAchecker testing workflow implementation
-| | |-- Main/Main.java # The CPAchecker testing entrance
-| | |-- Tools/TestCPAchecker.java # The CPAchecker command execution implementation
-| |-- TestSeahorn_singleton # The SeaHorn testing workflow implementation
-| | |-- Main/Main.java # The SeaHorn testing entrance
-| | |-- Tools/TestSeahorn.java # The SeaHorn command execution implementation
+| |-- TestCBMC # CBMC workflow implementation
+| | |-- Main/Main.java # CBMC entry point
+| | |-- Tools/TestCBMC.java # CBMC command executor
+| |-- TestCPAchecker # CPAchecker workflow implementation
+| | |-- Main/Main.java # CPAchecker entry point
+| | |-- Tools/TestCPAchecker.java # CPAchecker command executor
+| |-- TestSeahorn_singleton # SeaHorn workflow implementation
+| | |-- Main/Main.java # SeaHorn entry point
+| | |-- Tools/TestSeahorn.java # SeaHorn command executor
 
 |-- test_case_generation
-| |-- ASTInformation # The ast analysis implementation directory
+| |-- ASTInformation # The AST analysis implementation directory
 | |-- Condition # The conditional structures transformation implementation directory
-| |-- DataFlow # The conditional dataflow transformation implementation directory
-| |-- test # The overall testing process execution implemention directory
-| | |-- Mutate.java  # The entrance of test case generation process
+| |-- DataFlow # The dataflow transformation implementation directory
+| |-- test # The test-case generation overall process execution implemention directory
+| | |-- Mutate.java  # Entry point for test-case generation
 ```
 
 # Usage

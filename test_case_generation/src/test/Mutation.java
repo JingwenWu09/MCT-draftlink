@@ -20,10 +20,11 @@ public class Mutation {
 		File sourceFolder;
 		File destFolder;
 		File countFolder;
+		String sourceDir = "";
+		String destDir = "";
 		
-		sourceFolder = new File("/home/jing/桌面/IfRedone");
-//		destFolder = new File("/home/jing/桌面/IfCondition/If");
-		destFolder = new File("/home/jing/Desktop/randomtestsuite（复件）");
+		sourceFolder = new File(sourceDir);
+		destFolder = new File(destDir);
 		//生成mutation
 //		Mutation.genMutation(sourceFolder, destFolder);
 		//assert判断 

@@ -30,8 +30,9 @@ Core operations is under the main folder:
 
 - Ubuntu >= 20
 - Java >= 17
-- Csmith (Please install it following [Csmith](https://github.com/csmith-project/csmith))
-- CSMITH_HOME: After installing Csmith, please set the environment variable `CSMITH_HOME` to the installation path, with which we can locate `$CSMITH_HOME/include/csmith.h`.
+- CPAchecker (Please install it following [CPAchecker](https://cpachecker.sosy-lab.org/download.php))
+- CBMC (Please install it following [CBMC](https://github.com/diffblue/cbmc))
+- SeaHorn (Please install it following [SeaHorn](https://github.com/seahorn/seahorn))
 - Clang >= 14
 - Add file `libsigar-amd64-linux.so` into `/usr/lib` and `/usr/lib64`
 

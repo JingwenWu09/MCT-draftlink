@@ -110,7 +110,7 @@ For the same model checker, testing different configurations will produce separa
 Run the `Mutate.java` in the `test_case_generation/src/test/` to generate test cases from seed programs, and then run `model_checker_test/TestSpecificTool(e.g. TestCBMC)/src/main/Main.java` to generate executed verification results in different configurations. 
 
 # Find Bugs
-We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have compiled the issue records into this folder.
+We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have compiled the issue records into this folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/test_case_generation).
 
 ### Bug List
 

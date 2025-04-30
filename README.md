@@ -3,6 +3,7 @@ Based on the metamorphic testing paradigm, we explore
 the usefulness of optimization-guided equivalence transformations for validating software model checkers in this paper. In particular, we propose a general testing approach that involves four major steps: 1) perform program analysis to select particular code snippets that meet specific transformation conditions; 2) apply optimization-guided equivalence transformations to the selected code snippets to get new code snippets; 3) embed the equivalence relations between variables in the original and transformed code snippets as properties to be verified within the program (i.e., create effective test cases); 4) validate the test programs with the model checker and compare the actual verification results with the expected ones. If discrepancies are found, it indicates potential bugs in the software model checker. The detailed process is illustrated in the figure below. 
 
 <img src="./workflow.jpg" alt="Workflow image" width="600" />
+![Workflow image](./workflow.jpg)
 
 We use gcc regression testcases as seed programs. 
 
@@ -87,26 +88,19 @@ The command `clang -fsyntax-only -Xclang -ast-dump test.c -w -Xanalyzer -analyze
           `-DeclRefExpr 0x55f86a0e18a0 <col:25> 'int' lvalue Var 0x55f86a0e1780 'y' 'int'
 ```
 ### Step 3: Update the corresponding folder information
-In the `/src/test/Mutate.java`, the string `swarmDir` is the absolute path of the folder that contains all seed programs generated using Csmith, while the String `muIndexPath` is the absolute path of the folder that includes all test programs (i.e., both the initial and transformed programs). Within the `muIndexPath`, structure of each subfolder is following:
+In the `test_case_generation/src/test/Mutate.java`, the string `sourceDir` is the absolute path of the folder that contains all seed programs, while the String `destDir` is the absolute path of the folder that includes all test programs (i.e., both the initial and transformed programs). After test case generation, we check the correctness of every model checkers by corresponding test code directory. For example, in the `model_checker_test/TestCPAchecker/src/main/Main.java`, the String `testDir` is the absolute path of the folder that contains all transformed folders about one transformation method. Finally, within the `DestDir`, structure of each subfolder is following:
 ```
-|-- random 
-| |-- block # Each block aligns a loop of the seed program.
-| | |-- mutate # Each mutate includes an initial program, its transformed programs and some txt output files.
-| | | |-- initial_program.c
-| | | |-- initial_transformed.c
-| | | |-- compiler_output.txt
-| | | |-- compiler_sanitizer.txt
-| | | |-- compiler_performance.txt
+|-- filename-based folder: includes an initial program, its transformed programs and some txt output files.
+| | -- initial_program.c
+| | -- initial_transformed.c
+| | -- cpachecker-result.txt
+| | -- cbmc-result.txt
+| | -- seahorn-result.txt
 
 ```
-Finally, the programs with discrepancies are logged in the `gcc` and `llvm` folder respectively within the `muIndexPath` folder. 
-
-In the `/src/Overall/Main.java`, you also need to modify the third argument in `OverallProcess overall = new OverallProcess(swarmDir, muIndexPath, "")`. The available options are: `fusion_samenumber`, `fusion_add`, `fusion_max`, `invariant`, `unswitching_compound`, `unrolling`.
-
-If you want to change the Csmith generation configuration, you need to modify it in `SwarmGen.java`. Currently, we randomly select configurations for generation.
 
 ### Step 4: Run the project
-Run the `Main.java` in the `/src/Overall`. 
+Run the `Mutate.java` in the `test_case_generation/src/test/` to generate test cases from seed programs, and then run `model_checker_test/TestSpecificTool(e.g. TestCBMC)/src/main/Main.java` to generate executed verification results in different configurations. And you can change or expand the testing configuration or command in `./src/tools/TestSpecificTool(e.g. TestCBMC.java)`.
 
 # Find Bugs
 We conduct a preliminary evaluation of this approach on GCC and LLVM, and have successfully detected five incorrect optimization bugs.

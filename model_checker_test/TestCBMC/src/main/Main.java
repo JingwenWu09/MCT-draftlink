@@ -15,21 +15,9 @@ import tools.*;
 
 public class Main {
 	public static void main(String args[]) throws IOException, InterruptedException {
+		String testDir = "";
 		TypeTest type = new TypeTest();
-
-		type.testType("/home/elowen/桌面/DataflowSR-CPA");
-//		deleteOutputDir("/Users/elowen/Desktop/mct-mutation-loop");
-
-		TypeTest type1 = new TypeTest();
-
-		type1.testType("/home/elowen/桌面/mct-result-multi-config/CSElimination-deletePow");
-		
-//		CountResult cs = new CountResult();
-//		cs.countCPACheck("/home/elowen/桌面/Inversion", "cpachecker-SymbolicExecution.txt");
-
-//		copyResultFile("/Users/elowen/Desktop/mct-mutation-loop/IVElimination", "/Users/elowen/Desktop/mct-result-multi-config/IVElimination");
-
-		System.out.println("end!!!");
+		type.testType(testDir);
 	}
 	
 	public static void copyResultFile(String sourcedir, String targetdir) throws IOException, InterruptedException {

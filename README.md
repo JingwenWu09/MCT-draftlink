@@ -3,7 +3,6 @@ Based on the metamorphic testing paradigm, we explore
 the usefulness of optimization-guided equivalence transformations for validating software model checkers in this paper. In particular, we propose a general testing approach that involves four major steps: 1) perform program analysis to select particular code snippets that meet specific transformation conditions; 2) apply optimization-guided equivalence transformations to the selected code snippets to get new code snippets; 3) embed the equivalence relations between variables in the original and transformed code snippets as properties to be verified within the program (i.e., create effective test cases); 4) validate the test programs with the model checker and compare the actual verification results with the expected ones. If discrepancies are found, it indicates potential bugs in the software model checker. The detailed process is illustrated in the figure below. 
 
 <img src="./workflow.jpg" alt="Workflow image" width="600" />
-![Workflow image](./workflow.jpg)
 
 We use gcc regression testcases as seed programs. 
 
@@ -88,7 +87,7 @@ The command `clang -fsyntax-only -Xclang -ast-dump test.c -w -Xanalyzer -analyze
           `-DeclRefExpr 0x55f86a0e18a0 <col:25> 'int' lvalue Var 0x55f86a0e1780 'y' 'int'
 ```
 ### Step 3: Update the corresponding folder information
-In the `test_case_generation/src/test/Mutate.java`, the string `sourceDir` is the absolute path of the folder that contains all seed programs, while the String `destDir` is the absolute path of the folder that includes all test programs (i.e., both the initial and transformed programs). After test case generation, we check the correctness of every model checkers by corresponding test code directory. For example, in the `model_checker_test/TestCPAchecker/src/main/Main.java`, the String `testDir` is the absolute path of the folder that contains all transformed folders about one transformation method. Finally, within the `DestDir`, structure of each subfolder is following:
+In the `test_case_generation/src/test/Mutate.java`, you must manually set `sourceDir` and `destDir` in Mutate.java to match your local folder paths before running. The string `sourceDir` is the absolute path of the folder that contains all seed programs, while the String `destDir` is the absolute path of the folder that includes all test programs (i.e., both the initial and transformed programs).After generating test cases, we verify the correctness of each model checker by executing the corresponding test workflows located in the designated directories. For example, in the `model_checker_test/TestCPAchecker/src/main/Main.java`, the String `testDir` is the absolute path of the folder that contains all transformed folders about one transformation method. Finally, within the `DestDir`, structure of each subfolder is following:
 ```
 |-- filename-based folder: includes an initial program, its transformed programs and some txt output files.
 | | -- initial_program.c

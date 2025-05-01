@@ -9,8 +9,6 @@ We use GCC regression test cases as seed programs.
 # Structure of the project
 
 ```
-text<br>model_checker_test/<br> ├── TestCBMC # CBMC workflow implementation<br> │ ├── Main/Main.java # CBMC entry point<br> │ └── Tools/TestCBMC.java# CBMC command executor<br> ├── TestCPAchecker # CPAchecker workflow implementation<br> │ ├── Main/Main.java # CPAchecker entry point<br> │ └── Tools/TestCPAchecker.java<br> └── TestSeahorn_singleton # SeaHorn workflow implementation<br> ├── Main/Main.java # SeaHorn entry point<br> └── Tools/TestSeahorn.java<br><br>test_case_generation/<br> ├── ASTInformation # AST analysis<br> ├── Condition # Conditional-structure transformations<br> ├── DataFlow # Data-flow transformations<br> └── test/<br> └── Mutate.java # Entry point for test-case generation<br>
-
 Core operations are under the main folder:
 |-- model_checker_test
 | |-- TestCBMC # CBMC workflow implementation
@@ -32,6 +30,14 @@ Core operations are under the main folder:
 ```
 
 # Usage
+Our implementation fully automates the workflow described above.  
+At a high level it consists of three stages:
+
+1. **Test-case generation** – Starting from a corpus of seed programs, we locate transformable code snippets and apply *optimization-guided equivalence transformations* to obtain semantically equivalent variants (the test cases).  
+2. **Model-checker execution** – Each test case is verified by several model checkers (CPAchecker, CBMC, SeaHorn). For a given tool we can run multiple configurations; each run produces a result txt file.  
+3. **Oracle comparison & bug reporting** – The actual verification results are compared with the embedded *expected* results. Any discrepancy is written to `model-checker-false.txt`, which we later inspect manually and turn into bug reports.
+
+Steps 1-3 below tell you **how to prepare the environment**; Step 4 explains **how to launch the workflow**.
 
 ### Step 1: Install necessary packages
 
@@ -42,8 +48,12 @@ Core operations are under the main folder:
 - SeaHorn (Please install it following [SeaHorn](https://github.com/seahorn/seahorn))
 - Clang 14+
 - Copy file `libsigar-amd64-linux.so` into `/usr/lib` and `/usr/lib64`
+  
+> **Tip :** For CPAchecker/CBMC/SeaHorn follow the official installation guides; be sure each tool is on your `$PATH`.
 
-### Step 2: Test clang ast analysis functionality
+### Step 2: Verify Clang AST support
+
+The project relies on **Clang LibTooling** to analyse the AST, so we first check that your Clang build can dump ASTs correctly.
 
 Assume the following program, test.c:
 ```
@@ -60,7 +70,7 @@ void main() {
 }
 ```
 
-The command `clang -fsyntax-only -Xclang -ast-dump test.c -w -Xanalyzer -analyzer-disable-all-checking -I $CSMITH_HOME/include` is executed, and if the following output occurs, then there is no issue.
+The command `clang -fsyntax-only -Xclang -ast-dump test.c -w -Xanalyzer -analyzer-disable-all-checking` is executed, and if the following output occurs, then there is no issue.
 ```
 |-FunctionDecl 0x55f86a0e1450 <test.c:3:1, line:5:1> line:3:5 used add 'int (int, int)'
 | |-ParmVarDecl 0x55f86a0e12f0 <col:9, col:13> col:13 used a 'int'
@@ -94,31 +104,47 @@ The command `clang -fsyntax-only -Xclang -ast-dump test.c -w -Xanalyzer -analyze
         `-ImplicitCastExpr 0x55f86a0e1948 <col:25> 'int' <LValueToRValue>
           `-DeclRefExpr 0x55f86a0e18a0 <col:25> 'int' lvalue Var 0x55f86a0e1780 'y' 'int'
 ```
-### Step 3: Update the corresponding folder information
-Edit `test_case_generation/src/test/Mutate.java` and set the absolute paths for `sourceDir` (the folder with all seed programs) and `destDir` (the folder for all generated test programs).
-After that, edit `model_checker_test/TestCPAchecker/src/main/Main.java` and set the absolute paths for `testDir` (i.e., destDir).
-Note that each transformation method generates its own `destDir`.
+### Step 3: Configure directory paths
 
-Within destDir, each subfolder has the structure:
+Before execution you must tell the framework where to read seeds and where to write results.
+1. Open `test_case_generation/src/test/Mutate.java` and set the absolute paths for:
+```
+sourceDir  // folder that contains all seed programs
+destDir    // folder that will receive every generated test program
+```
+2. Open `model_checker_test/TestCPAchecker/src/main/Main.java` and set
+```
+testDir = <destDir>; // matches the value above
+```
+Note : Each transformation method creates its own destDir. For a new method, add another path entry.
+
+Directory layout inside any destDir:
 ```
 |-- <seed-name>/
 | | -- initial_program.c
 | | -- initial_transformed.c
-| | -- ...
+| | -- ...     # other variants
 | | -- cpachecker-result.txt
 | | -- cbmc-result.txt
 | | -- seahorn-result.txt
 
 ```
-For the same model checker, testing different configurations will produce separate `result.txt` files. You can change or expand the testing configuration or command in `test_case_generation/.../src/tools/TestSpecificTool.java`.
+Running the same model checker with different configurations appends additional result txt files.
+Edit `test_case_generation/.../src/tools/TestSpecificTool.java` to customise commands or add new configurations.
 
-### Step 4: Run the project
-1. Run `Mutate.java` in `test_case_generation/src/test/` to generate test cases.
-2. Execute the desired workflow, e.g.:
+### Step 4: Run the workflow
+# 1) generate test cases
 ```
-cd model_checker_test/TestCBMC/src/main
-java Main
+cd test_case_generation/src/test
+javac Mutate.java && java Mutate   # creates destDir/… hierarchy
 ```
 
-# Find Bugs
-We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detected 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have consolidated the issue records in the folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report).
+# 2) launch a model-checker workflow (example: CBMC)
+```
+cd ../../../model_checker_test/TestCBMC/src/main
+javac Main.java && java Main
+```
+When a verification result diverges from the oracle, the pair <test-case-path> : <tool-config> is appended to model-checker-false.txt in the corresponding workflow directory. Inspect that file to reproduce and minimise the failing example before filing an upstream issue.
+
+# Detected Bugs
+We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have consolidated the issue records in the folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report).

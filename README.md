@@ -1,6 +1,11 @@
 # Model Checker Testing
 Based on the metamorphic testing paradigm, we explore
-the usefulness of optimization-guided equivalence transformations for validating software model checkers in this paper. In particular, we propose a general testing approach that involves four major steps: 1) perform program analysis to select particular code snippets that meet specific transformation conditions; 2) apply optimization-guided equivalence transformations to the selected code snippets to get new code snippets; 3) embed the equivalence relations between variables in the original and transformed code snippets as properties to be verified within the program (i.e., create effective test cases); 4) validate the test programs with the model checker and compare the actual verification results with the expected ones. If discrepancies are found, it indicates potential bugs in the software model checker. The detailed process is illustrated in the figure below. 
+the usefulness of optimization-guided equivalence transformations for validating software model checkers in this paper. In particular, we propose a general testing approach that involves four major steps: 
+1) perform program analysis to select particular code snippets that meet specific transformation conditions;
+2) apply optimization-guided equivalence transformations to the selected code snippets to get new code snippets;
+3) embed the equivalence relations between variables in the original and transformed code snippets as properties to be verified within the program (i.e., create effective test cases);
+4) validate the test programs with the model checker and compare the actual verification results with the expected ones. If discrepancies are found, it indicates potential bugs in the software model checker.
+The detailed process is illustrated in the figure below. 
 
 <img src="./workflow.jpg" alt="Workflow image" width="600" />
 
@@ -35,7 +40,7 @@ At a high level it consists of three stages:
 
 1. **Test-case generation** – Starting from a corpus of seed programs, we locate transformable code snippets and apply *optimization-guided equivalence transformations* to obtain semantically equivalent variants (the test cases).  
 2. **Model-checker execution** – Each test case is verified by several model checkers (CPAchecker, CBMC, SeaHorn). For a given tool we can run multiple configurations; each run produces a result txt file.  
-3. **Oracle comparison & bug reporting** – The actual verification results are compared with the embedded *expected* results. Any discrepancy is written to `model-checker-false.txt`, which we later inspect manually and turn into bug reports.
+3. **Oracle comparison & bug reporting** – The actual verification results are compared with the expected results. Any discrepancy is written to `model-checker-false.txt`, which we later inspect manually and turn into bug reports.
 
 Steps 1-3 below tell you **how to prepare the environment**; Step 4 explains **how to launch the workflow**.
 
@@ -133,13 +138,13 @@ Running the same model checker with different configurations appends additional 
 Edit `test_case_generation/.../src/tools/TestSpecificTool.java` to customise commands or add new configurations.
 
 ### Step 4: Run the workflow
-# 1) generate test cases
+1. generate test cases
 ```
 cd test_case_generation/src/test
 javac Mutate.java && java Mutate   # creates destDir/… hierarchy
 ```
 
-# 2) launch a model-checker workflow (example: CBMC)
+2. launch a model-checker workflow (example: CBMC)
 ```
 cd ../../../model_checker_test/TestCBMC/src/main
 javac Main.java && java Main
@@ -147,4 +152,4 @@ javac Main.java && java Main
 When a verification result diverges from the oracle, the pair <test-case-path> : <tool-config> is appended to model-checker-false.txt in the corresponding workflow directory. Inspect that file to reproduce and minimise the failing example before filing an upstream issue.
 
 # Detected Bugs
-We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Since our submissions (e.g., issues) to the official repositories contain author-identifying information, which conflicts with the anonymity requirement of the review process, we have consolidated the issue records in the folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report).
+We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Because our issue submissions to the official repositories include information that could reveal the authors’ identities, which violates the double-blind review policy, we have consolidated the issue records in the folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report).

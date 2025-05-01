@@ -149,7 +149,7 @@ javac Mutate.java && java Mutate   # creates destDir/… hierarchy
 cd ../../../model_checker_test/TestCBMC/src/main
 javac Main.java && java Main
 ```
-When a verification result diverges from the oracle, the pair <test-case-path> : <tool-config> is appended to model-checker-false.txt in the corresponding workflow directory. Inspect that file to reproduce and minimise the failing example before filing an upstream issue.
+When a verification result diverges from the oracle, the pair `<test-case-path> : <tool-config>` is appended to model-checker-false.txt in the corresponding workflow directory. Inspect that file to reproduce and minimise the failing example before filing an upstream issue.
 
 # Detected Bugs
 We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Because our issue submissions to the official repositories include information that could reveal the authors’ identities, which violates the double-blind review policy, we have consolidated the issue records in the folder [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report).

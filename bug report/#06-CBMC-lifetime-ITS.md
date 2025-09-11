@@ -3,7 +3,7 @@
 ```
 Me:
 
-extern int a[], b[];
+extern int arr[], brr[];
 
 void f1(int *ap, int p) {
   switch (p) {
@@ -19,13 +19,13 @@ void f2(int *ap, int p) {
 
 void main() {
   int n = 2;
-  f1(a, n * 8 & 1);
-  f2(b, n << 3 & 1);
-  assert(a[1] == b[1]);
+  f1(arr, n * 8 & 1);
+  f2(brr, n << 3 & 1);
+  assert(arr[1] == brr[1]);
 }
 
-int a[2] = {3, 5};
-int b[2] = {3, 5};
+int arr[2] = {3, 5};
+int brr[2] = {3, 5};
 
 In this Example, I run cbmc <filename.c> --pointer-check and cbmc gave FAILURE result
 with the message dereference failure: pointer outside object bounds in *a: FAILURE.

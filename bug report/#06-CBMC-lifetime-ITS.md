@@ -20,7 +20,7 @@ void f2(int *ap, int p) {
 void main() {
   int n = 2;
   f1(a, n * 8 & 1);
-  f2(b, n >> 2 & 1);
+  f2(b, n << 3 & 1);
   assert(a[1] == b[1]);
 }
 

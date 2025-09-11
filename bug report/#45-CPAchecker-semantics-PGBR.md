@@ -15,11 +15,12 @@ void main() {
   struct A *a = &d;
   union U u = {{1.0, 1.0}};
   double x, y;
-  if (a->a == 176 &&
-    a->b == 52 && a->c == 31)
-      x = u.val; 
-  else exit(0);
-  if (a->a == 176) y = u.val;
+  if (a->a != 176 || a->b != 52 || a->c != 31)
+    x = -1; 
+  else x = u.val; ;
+  if (a->a == 176 && a->b == 52 && a->c == 31)
+    y = u.val;
+  else y = -1;
   assert (x == y);
 } 
 

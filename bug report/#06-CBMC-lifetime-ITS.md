@@ -8,12 +8,12 @@ extern int a[], b[];
 void f1(int *ap, int p) {
   switch (p) {
   case 0x00:
-    ap[p + 1] = p + 1; break;
+    ap[p + 1] = ap[p] + 1; break;
   default: ap[p] = 2; }
 }
 
 void f2(int *ap, int p) {
-  if(p == 0x00) ap[p + 1]=p + 1;
+  if(p == 0x00) ap[p + 1] = ap[p] + 1;
   else ap[p] = 2;
 }
 

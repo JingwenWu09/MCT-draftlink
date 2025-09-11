@@ -25,7 +25,7 @@ void main() {
 }
 
 int a[2] = {3, 5};
-int b[2] = {9, 4};
+int b[2] = {3, 5};
 
 In this Example, I run cbmc <filename.c> --pointer-check and cbmc gave FAILURE result
 with the message dereference failure: pointer outside object bounds in *a: FAILURE.

@@ -1,0 +1,64 @@
+# Bug #18 in CPAchecker was confirmed as a language semantics related issue. It was exposed by a test case generated using Probability-Guided Branch Reordering transformation.
+
+```
+Me:
+
+union U {float t[2]; double val;};
+struct A {unsigned int a, b, c;};
+struct A bar(void) {
+  return (struct A){176, 52, 31};
+}
+
+void main() {
+  struct A d;
+  d = ({ ({ bar(); }); });
+  struct A *a = &d;
+  union U u = {{1.0, 1.0}};
+  double x, y;
+  if (a->a == 176 &&
+    a->b == 52 && a->c == 31)
+      x = u.val; 
+  else exit(0);
+  if (a->a == 176) y = u.val;
+  assert (x == y);
+} 
+
+In this case, the assert statement is theoretically true,
+while the PredicateAnalysis and KInduction both gave the FALSE results 
+
+command line:
+./scripts/cpa.sh -predicateAnalysis -preprocess -64 <filename.c>
+```
+```
+Developer:
+
+If we look at output/Counterexample.1.assignment.txt (typically the HTML report would also show this,
+but a bug seems to prevent it from loading for this program),
+we can see that the counterexample produced by CPAchecker has a and a_1 both set to NaN.
+I would argue that this behavior is correct.
+§ 6.2.6.1 (4) of C11 contains the sentence "Two values (other than NaNs) with the same object representation compare equal".
+For me this implies that two NaNs do not (need to) compare equal even if they both have the same object representation (i.e., their bytes in memory are the same).
+
+```
+```
+Me:
+
+I add the statement printf("%lf, %lf", x, y); to output the values of x and y and run
+in gcc(12.2.0) and clang(14.0.0) compilers, then the values of both variables are concrete
+(0.007813, keeping six decimal places) instead of NaN.
+Do PredicateAnalysis and KInduction not calculate the specific values of x and y?
+```
+
+```
+Developer:
+
+I understand now, you are right.
+Btw.: The reason why it works after changing the types of the union fields
+is that if you convert an int to a double, there is no way it will produce a NaN value.
+The actual problem here is the union with array fields.
+If float t[2] is changed to struct { float t1; float t2; },
+then CPAchecker works as expected and can prove equality of x and y.
+The problem of unions with arrays is tracked already as #557.
+
+```
+

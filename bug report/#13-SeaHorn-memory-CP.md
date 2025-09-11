@@ -1,0 +1,116 @@
+# Bug #2 in SeaHorn was fixed as a memory allocation related issue. It was exposed by a test case generated using constant propagation transformation. 
+
+```
+Me:
+
+#include  "seahorn/seahorn.h"
+int main() {
+  int first = 0;
+  int last = 0;
+  while (first <= last) {
+    int last_1 = last;
+    for (int i = 0; i < 3; i++) {
+      last++;
+    }
+    for (int i_1 = 0; i_1 < 3; i_1++) {
+      last_1++;
+    }
+    sassert(last == last_1) ;
+    first++;
+    if( first > 10 ){
+      break;
+    }
+  }
+  return 0;
+}
+
+In example.c, the two inner for loops are equivalent in terms of the operation of the last and last_1 variables. That is, the verification result should be unsat.
+
+I ran sea pf example.c and got the expected result unsat. However, when I ran sea bpf example.c, SeaHorn gave the following "crash backtrace" message:
+
+/usr/bin/clang+llvm-14.0.0/bin/clang-14 -c -emit-llvm -D__SEAHORN__ -fdeclspec -O1 -Xclang -disable-llvm-optzns -fgnu89-inline -m32 -I/home/jing/seahorn/build/run/include -o /tmp/sea-8qzww2bf/example.bc example.c
+/home/jing/seahorn/build/run/bin/seapp -o /tmp/sea-8qzww2bf/example.pp.bc --simplifycfg-sink-common=false --strip-extern=false --promote-assumptions=false --kill-vaarg=true --ignore-def-verifier-fn=false --horn-keep-arith-overflow=false --promote-nondet-undef=true /tmp/sea-8qzww2bf/example.bc
+/home/jing/seahorn/build/run/bin/seapp --simplifycfg-sink-common=false -o /tmp/sea-8qzww2bf/example.pp.ms.bc --horn-mixed-sem --ms-reduce-main /tmp/sea-8qzww2bf/example.pp.bc
+/home/jing/seahorn/build/run/bin/seaopt -f --simplifycfg-sink-common=false -o /tmp/sea-8qzww2bf/example.pp.ms.o.bc -O3 --seaopt-enable-indvar=false --seaopt-enable-loop-idiom=false --unroll-threshold=150 --unroll-allow-partial=false --unroll-partial-threshold=0 --vectorize-slp=false /tmp/sea-8qzww2bf/example.pp.ms.bc
+/home/jing/seahorn/build/run/bin/seaopt -f -o /tmp/sea-8qzww2bf/example.pp.ms.o.ul.bc -loop-simplify -fake-latch-exit -sea-loop-unroll /tmp/sea-8qzww2bf/example.pp.ms.o.bc
+/home/jing/seahorn/build/run/bin/seapp -o /tmp/sea-8qzww2bf/example.pp.ms.o.ul.cut.bc --horn-cut-loops --back-edge-cutter-with-asserts=false /tmp/sea-8qzww2bf/example.pp.ms.o.ul.bc
+ #0 0x000055d85728b673 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/home/jing/seahorn/build/run/bin/seapp+0x1c80673)
+ #1 0x000055d85728970c llvm::sys::RunSignalHandlers() (/home/jing/seahorn/build/run/bin/seapp+0x1c7e70c)
+ #2 0x000055d85728baff SignalHandler(int) Signals.cpp:0:0
+ #3 0x00007fa5fd042520 (/lib/x86_64-linux-gnu/libc.so.6+0x42520)
+ #4 0x000055d8560d22e9 seahorn::markAncestorBlocks(llvm::ArrayRef<llvm::BasicBlock const*>, llvm::DenseSet<llvm::BasicBlock const*, llvm::DenseMapInfo<llvm::BasicBlock const*, void> >&) (/home/jing/seahorn/build/run/bin/seapp+0xac72e9)
+ #5 0x000055d8560d3776 seahorn::reduceToAncestors(llvm::Function&, llvm::ArrayRef<llvm::BasicBlock const*>, seahorn::SeaBuiltinsInfo&) (/home/jing/seahorn/build/run/bin/seapp+0xac8776)
+ #6 0x000055d8560d389f seahorn::reduceToReturnPaths(llvm::Function&, seahorn::SeaBuiltinsInfo&) (/home/jing/seahorn/build/run/bin/seapp+0xac889f)
+ #7 0x000055d8560cbd08 (anonymous namespace)::BackedgeCutter::runOnFunction(llvm::Function&) BackedgeCutter.cc:0:0
+ #8 0x000055d855ed31ed llvm::FPPassManager::runOnFunction(llvm::Function&) (/home/jing/seahorn/build/run/bin/seapp+0x8c81ed)
+ #9 0x000055d855ed9f93 llvm::FPPassManager::runOnModule(llvm::Module&) (/home/jing/seahorn/build/run/bin/seapp+0x8cef93)
+#10 0x000055d855ed3d10 llvm::legacy::PassManagerImpl::run(llvm::Module&) (/home/jing/seahorn/build/run/bin/seapp+0x8c8d10)
+#11 0x000055d855a8610e main (/home/jing/seahorn/build/run/bin/seapp+0x47b10e)
+#12 0x00007fa5fd029d90 (/lib/x86_64-linux-gnu/libc.so.6+0x29d90)
+#13 0x00007fa5fd029e40 __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29e40)
+#14 0x000055d855a82c45 _start (/home/jing/seahorn/build/run/bin/seapp+0x477c45)
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
+Stack dump:
+0.	Program arguments: /home/jing/seahorn/build/run/bin/seapp -o /tmp/sea-8qzww2bf/example.pp.ms.o.ul.cut.bc --horn-cut-loops --back-edge-cutter-with-asserts=false /tmp/sea-8qzww2bf/example.pp.ms.o.ul.bc
+1.	Running pass 'Function Pass Manager' on module '/tmp/sea-8qzww2bf/example.pp.ms.o.ul.bc'.
+2.	Running pass 'BackedgeCutter' on function '@main'
+
+Is there some problem with the bpf instruction handling loops? I have some trouble understanding this situation.
+
+```
+```
+Developer:
+
+fixed in above commit. The issue was with not handling properly the case
+when optimization removes all basic blocks of the function.
+```
+
+```
+Me:
+
+#define LIMIT 1000;
+struct S {int x1, x2, x3;};
+void f(int x, int y, int z) {
+  struct S a={x,y,z}, b={x,y,z};
+  struct S *c = &b;
+  int i, j = 0, j1 = 0;
+  for (i = 0; i < LIMIT; i++) {
+    c->x3 += (a.x2 - a.x1) * c->x2;
+    if (c->x3 == 5) 
+      for (j = 0; j < LIMIT; j++);
+    if (3+(2-1)*2 == 5) 
+      for(j1 = 0; j1<LIMIT; j1++);
+    assert (j == j1);
+  }
+}
+void main() {
+  f(1, 2, 3);
+}
+
+I ran sea bpf example.c but got the unexpected "crash backtrace" message.
+```
+```
+Developer:
+
+Unfortunately this is not something I will be able to fix (at least not quickly).
+The root cause of the problem is in LLVM's implementation of ScalarEvolution.
+ It is implemented using recursion, and your program, when unrolled, is too big for the stack.
+Recursion runs out of stack and that causes a crash.
+
+It works for LIMIT of 248 or below, and runs out of stack for higher limits on my machine.
+
+Note that you really should not expect bounded model checker to work well on code
+that requires thousands of loop unrollings. Even if seahorn generates the verification condition,
+it will not be solvable, except for trivial instances.
+
+If you are working on program equivalence, you should be looking into heuristics to
+break the problem into parts that can be shown equivalent in isolation.
+This is a strategy that tends to work well for hardware equivalence checking.
+
+There has been number of works on applying similar techniques for software via
+what is called a self-composition of a program with itself, or slightly modified version of itself.
+```
+
+
+
+

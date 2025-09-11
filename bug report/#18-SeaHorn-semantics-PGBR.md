@@ -1,0 +1,87 @@
+# Bug #7 in SeaHorn was confirmed as a language semantics related issue. It was exposed by a test case generated using probability-guided branch reordering transformation.
+
+```
+Me:
+
+#include  "seahorn/seahorn.h"
+
+union T {
+  long l;
+  struct {
+    char b3, b2, b1, b0;
+  } c;
+};
+
+int f(union T u) {
+  ++u.c.b0;
+  ++u.c.b3;
+  return (u.c.b1 != 2 || u.c.b2 != 2);
+}
+
+int main() {
+  union T u;
+  u.c.b1 = 2;
+  u.c.b2 = 2;
+  u.c.b0 = ~0;
+  u.c.b3 = ~0;
+  union T u_1 = u;
+
+  if( 0 ) {
+    abort();
+  } else if( (f(u)) ) {
+    abort();
+  }
+
+  if( (f(u_1)) ) {
+    abort();
+  } else if(0) {
+    abort();
+  }
+  
+  sassert(u.l == u_1.l) ;
+  return 0;
+}
+
+I used clang -m64 example.c and clang -m32 example.c to compile example.c, then ran their executables.
+Both results showed that the condition u.l == u_1.l in assert() statement is true.
+However, I respectively ran sea bpf -m64 example.c and sea bpf -m32 example.c ,
+-m64 gave sat result and -m32 gave unsat result.
+
+In example.c, the variable u has been assigned before it is used.
+I don't understand why SeaHorn gave different results than compiler Clang.
+Please help me to explain this situation. Thanks.
+
+Version: seahorn 14.0.0
+OS: ubuntu 22.04
+```
+```
+Developer:
+
+With -m32, the size of a long is 4 bytes so there is no UB.
+However, with -m64 the size of a long is 8 bytes.
+So with -m64 when you compare u.l == u_1.l 4 bytes will be uninitialized.
+```
+
+```
+Developer:
+
+feat(seapp): option to disable promotion of undef to nondet
+Option --promote-nondet-undef of seapp controls whether `undef` in bitcode is
+promoted to non-determinism. Currently, the initial value is true.
+
+sea script has to be extended to allow users to control setting the option to
+false.
+
+The option is useful to validate that any resolution of `undef` is a well
+defined program. However, it is inconvenient when verification is done for some
+other property, under assumption that `undef` does not cause any undefined
+behaviour.
+```
+```
+Developer:
+
+To get the same behavior than Clang, update SeaHorn and use the command sea bpf -m64 --promote-nondet-undef=false.
+```
+
+
+

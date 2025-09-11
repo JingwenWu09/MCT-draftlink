@@ -1,0 +1,55 @@
+# Bug #16 in SeaHorn was unconfirmed as a lifetime model issue. It was exposed by a test case generated using dead code elimination transformation.
+```
+Me:
+
+#include  "seahorn/seahorn.h"
+
+static int *p;
+void bar(int cnt) {
+  int i = 0;
+  int cnt_1 = cnt;
+  int i_1 = i;
+  
+  if (cnt == 0) {
+    p = &i;
+    bar(1);
+    if (i != 1) {
+      return ;
+    }
+  } else if (cnt == 1) {
+    *p = 1;
+  }
+
+  if (cnt_1 == 0) {
+    p = &i_1;
+    bar(1);
+    if (i_1 != 1) {
+      return ;
+    }
+  }
+
+  sassert(cnt == cnt_1) ;
+  sassert(i == i_1) ;  
+}
+
+int main() {
+  bar(0);
+  return 0;
+}
+
+In this case, I ran sea bpf -m64 --promote-nondet-undef=false example.c and Seahorn gave the unexpected result sat.
+However, after I changed the statement int i = 0; to static int i = 0;
+in function bar() and ran the command again, SeaHorn gave the expected result unsat.
+I have trouble understanding this situation. Is it due to some effect of not using static ?
+
+```
+```
+Developer:
+
+Just a quick look. SeaHorn is not really good with recursive calls.
+Moreover, defining a variable as static makes the scope of the variable global,
+so the semantics the program changes. But in any case, having static variables shouldn't be a problem.
+```
+
+
+

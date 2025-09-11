@@ -1,0 +1,50 @@
+# Bug #14 in SeaHorn was confirmed as a C standard library related issue. It was exposed by a test case generated using dead code elimination transformation.
+```
+Me:
+
+#include  "seahorn/seahorn.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+  FILE *f = fopen("fred.txt", "w");
+  fwrite("hello\nhello\n", 1, 12, f);
+  fclose(f);
+
+  int InChar = 0;
+  char ShowChar = '\0';
+  f = fopen("fred.txt", "r");
+
+  int InChar_1 = InChar;
+  FILE * f_1 =  fopen("fred.txt", "r");
+  char ShowChar_1 = ShowChar;
+  while ((InChar = fgetc(f)) != EOF) {
+    ShowChar = InChar;
+    if(0) {
+      ShowChar = '.';
+    }
+  }
+
+  while ((InChar_1 = fgetc(f_1)) != EOF) {
+    ShowChar_1 = InChar_1;
+  }
+  
+  sassert(InChar == InChar_1) ;
+  sassert(ShowChar == ShowChar_1) ;
+  fclose(f);
+
+  return 0;
+}
+
+In this case, these two assertions should be true while seahorn gives sat result with command sea bpf -m64 --bmc=opsem FILE.c.
+Does seahorn not support file read and write operations such as fopen, fget, fwrite, fclose?
+
+```
+```
+Developer:
+
+Reasoning about file contents is beyond what SeaHorn can do.
+```
+
+
+

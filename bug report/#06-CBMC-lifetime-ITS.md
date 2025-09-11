@@ -1,0 +1,82 @@
+# Bug #6 in CBMC was confirmed as a lifetime model related issue. It was exposed by a test case generated using if-else chain to switch conversion transformation. 
+
+```
+Me:
+
+extern int a[], b[];
+
+void f1(int *ap, int p) {
+  switch (p) {
+  case 0x00:
+    ap[p + 1] = p + 1; break;
+  default: ap[p] = 2; }
+}
+
+void f2(int *ap, int p) {
+  if(p == 0x00) ap[p + 1]=p + 1;
+  else ap[p] = 2;
+}
+
+void main() {
+  int n = 2;
+  f1(a, n * 8 & 1);
+  f2(b, n >> 2 & 1);
+  assert(a[1] == b[1]);
+}
+
+int a[2] = {3, 5};
+int b[2] = {9, 4};
+
+In this Example, I run cbmc <filename.c> --pointer-check and cbmc gave FAILURE result
+with the message dereference failure: pointer outside object bounds in *a: FAILURE.
+
+Then I moved this statement int a[2] = {3, 5}; forward to the first line.
+And the pointer-check result became SUCCESSFUL.
+Why did pointer-check give different results? Is it releated to the extern keyword?
+Please help me to explain this situation. Thanks.
+
+CBMC version: 5.88.0
+Operating system: Ubuntu 22.04, macOS
+Command line: cbmc example.c
+```
+```
+Developer:
+
+When you say extern int arr[], it means that the canonical definition for the object
+is in a different translation unit, which you don't provide, so cbmc has no way of knowning
+how big the object is, and thus no way of knowing whether the access patterns
+within the current translation unit can violate the bounds.
+```
+```
+Developer:
+
+After a bit more investigation into this, I'm going to classify this as a bug,
+so as to remind us to look more into this.
+
+I have gone through:
+
+The --show-goto-functions,
+The --show-vcc
+The --program-only
+The --show-symbol-table
+options for both of these programs, diffing them and I can't find any discernable difference
+between the two diffs - thus, the mechanism by which one comes successful
+and the other doesn't isn't apparent to me, thus requiring a deeper dive to understand the behaviour.
+
+I believed it must be the array definition coming above the function, thus bounding the array,
+but having a closer look on the symbol tables/vccs of both of these,
+it seems that both see arr as an array of size 2,
+with no extern label anywhere.
+
+Worth noting that looking at the vccs, you need to disable simplification
+(or at least propagation, --no-propagation)
+to get the vccs otherwise the simplification engine kills them.
+```
+```
+Developer:
+
+Note to self: have a look at the object_size implementation in the decision procedure.
+```
+
+
+

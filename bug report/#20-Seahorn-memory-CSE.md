@@ -1,0 +1,55 @@
+# Bug #9 in SeaHorn was unconfirmed as a memory allocation related issue. It was exposed by a test case generated using common subexpression elimination transformation.
+
+Me:
+```
+#include  "seahorn/seahorn.h"
+
+int main() {
+  unsigned char A[8];
+  unsigned char am = 182;
+  char an = 10;
+  int D[8];
+  unsigned long dm = 1444232198;
+  int dn = 1437011542;
+  unsigned long B[8];
+  unsigned char bm = 250;
+  long bn = 1333209412;
+  
+  unsigned char A_1[8];
+  int D_1[8];
+  unsigned long B_1[8];
+
+  for (unsigned long i = 0; i < 8; i++) {
+  	A[i] = am * i + an;
+  	D[i] = A[i] * dm - dn;
+  }
+  for( int i = 0; i < 8; i++ ) {
+  	B[i] = D[i] * bm - bn;
+  }
+
+  for (unsigned long i = 0; i < 8; i++) {
+  	A_1[i] = am * i + an;
+  	D_1[i] = A_1[i] * dm - dn;
+  	B_1[i] = D_1[i] * bm - bn;
+  }
+  
+  for(int i = 0; i < 8; i++) {
+  	sassert(B[i] == B_1[i]) ;    //line: 36
+  }
+  for(int i = 0; i < 8; i++) {
+  	sassert(D[i] == D_1[i]) ;    //line: 39
+  }
+  
+  return 0;
+}
+```
+
+The purpose of example.c is to fuse two separate loops and keep the value of the variables constant. 
+The two sassert() statements(in line 137 and 140) were used to verify that 
+the elements' values of arrays B and B_1 as well as D and D_1 are equal.
+
+I ran sea bpf -m64 --promote-nondet-undef=false example.c and SeaHorn gave the unexpected result sat. 
+However, if I kept only one of the two sassert() statements and commented out the other, 
+SeaHorn would give the expected result unsat.
+
+In this case, why keeping one or both of these sassert() statements generated different results?

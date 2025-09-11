@@ -1,0 +1,73 @@
+# Bug #8 in SeaHorn was confirmed as a language semantics related issue. It was exposed by a test case generated using probability-guided branch reordering transformation.
+
+```
+Me:
+
+example1.c
+
+#include  "seahorn/seahorn.h"
+struct S {
+  unsigned y;
+  unsigned x;
+};
+int f() {
+  return 0;
+}
+int main() {
+  struct S s;
+  struct S s_1 = s;
+
+  if(0) {
+  	;
+  } else if( f() == 0 ) {
+  	;
+  }
+  
+  if( f() == 0 ) {
+  	;
+  } else if (0) {
+    ;
+  }
+
+  sassert(s.y == s_1.y) ;
+  return 0;
+}
+
+example2.c
+
+#include  "seahorn/seahorn.h"
+struct S {
+  unsigned y;
+  unsigned x;
+};
+
+int main() {
+  struct S s;
+  struct S s_1 = s;
+  sassert(s.y == s_1.y) ;
+  return 0;
+}
+
+In these two examples, I ran "sea bpf -m64 <filename.c>" , then example1.c generated sat result whileexample2.c generated unsat result.
+The difference between the two examples is that example2.c is obtained by example1.c
+after removing function f() and two if() blocks that have no effect on the result of running the program.
+
+Since the deleted code has no effect on the result of the program's assert() statement,
+why does SeaHorn gave a different result? 
+```
+```
+Developer:
+
+The two programs has undefined behavior. In the second program, the compiler detects that s and s_1 are not initialized
+and therefore the assertion is removed. Please note the message printed by SeaHorn:
+
+WARNING: no assertion was found so either program does not have assertions or frontend discharged them.
+unsat
+
+The message says that there is no assertion.
+You can use the option --oll=test.ll to see the LLVM bitcode that is analyzed by SeaHorn.
+The first program has also undefined behavior but the compiler decides to keep the assertion.
+```
+
+
+

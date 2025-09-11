@@ -4,22 +4,23 @@
 Me:
 
 unsigned int a[2] = {2, 0}, b[2];
-void f(unsigned int *sp, int d){
-  int i = 0; 
-  double n = 1.01;
+void f1(unsigned int *sp, int d){
+  int i = 0; double n = 1.01;
   unsigned int *p, *top; 
-  top = sp; 
-  sp -= 1;
+  top = sp; sp -= 1;
   for (p = sp; p <= top; p++)
-    if (*p < 2) {
-      if (d) (*p) = (i * 8) - n;
-      else (*p) = (i << 3) - n; 
-    }
+    if (*p < 2 && d) (*p) = (i * 8) - n;
+}
+void f2(unsigned int *sp, int d){
+  int i = 0; double n = 1.01;
+  unsigned int *p, *top; 
+  top = sp; sp -= 1;
+  for (p = sp; p <= top; p++)
+    if (*p < 2 && d) (*p) = (i << 3) - n; 
 }
 void main() {
   memcpy (b, a, sizeof(b));
-  f(a + 1, 0);
-  f(b + 1, 1);
+  f1(a + 1, 0); f2(b + 1, 1);
   assert (a[1] == b[1]); 
 }
 

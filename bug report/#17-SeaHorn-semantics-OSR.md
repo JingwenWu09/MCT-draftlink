@@ -9,14 +9,14 @@ void f1(unsigned int *sp, int d){
   unsigned int *p, *top; 
   top = sp; sp -= 1;
   for (p = sp; p <= top; p++)
-    if (*p < 2 && d) (*p) = (i * 8) - n;
+    if (*p < 2 && d) (*p) = n - (i * 8);
 }
 void f2(unsigned int *sp, int d){
   int i = 0; double n = 1.01;
   unsigned int *p, *top; 
   top = sp; sp -= 1;
   for (p = sp; p <= top; p++)
-    if (*p < 2 && d) (*p) = (i << 3) - n; 
+    if (*p < 2 && d) (*p) = n - (i << 3); 
 }
 void main() {
   memcpy (b, a, sizeof(b));

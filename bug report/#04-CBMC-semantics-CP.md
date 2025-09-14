@@ -17,8 +17,8 @@ struct obj {
 struct list _l = {.n = &_o.l};
 
 int main(int argc, char *argv[]) {
-  struct obj *o1 = &_o;         // original
-  struct obj *o2 = &_o;         // transformed
+  struct obj *o1 = &_o;
+  struct obj *o2 = &_o;
   _o.l.n = &_l;
 
   int count1 = 0;

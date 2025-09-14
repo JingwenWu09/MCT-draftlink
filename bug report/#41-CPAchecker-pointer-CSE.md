@@ -1,6 +1,7 @@
 # Bug #14 in CPAchecker was confirmed as a pointer alias related issue. It was exposed by a test case generated using common subexpression elimination transformation. 
 ```
 Me:
+
 unsigned char c[256] = {0xdc}, c1[256], y[256] = {0xcc}, y1[256];
 void main() {
   int i, h = 0, h1 = h;

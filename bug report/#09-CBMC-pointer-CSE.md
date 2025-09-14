@@ -1,8 +1,7 @@
 # Bug #9 in CBMC was unconfirmed as a pointer alias related issue. It was exposed by a test case generated using common subexpression elimination transformation.
 
-Me:
-
 ```
+Me:
 #include <math.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -21,12 +20,10 @@ Me:
 #endif
 
 __attribute__((noipa)) void foo(char *p, char *q, int r) {
-  // -------- Original control-flow expressions --------
   int cond1_orig = (q[0] == 'a' && q[1] == 'b');
   int cond2_orig = !r && (q[0] == 'a' && q[1] == 'b');
   int cond3_orig = (q[0] == 'a' && q[1] == 'b') || (q[0] == 'x' && q[1] == 'y');
 
-  // -------- Transformed version (CSE) --------
   char c0 = q[0];
   char c1 = q[1];
 
@@ -37,12 +34,10 @@ __attribute__((noipa)) void foo(char *p, char *q, int r) {
   int cond2_new = !r && cond_base;
   int cond3_new = cond_base || cond_alt;
 
-  // -------- Assert semantic equivalence --------
   assert(cond1_orig == cond1_new);
   assert(cond2_orig == cond2_new);
   assert(cond3_orig == cond3_new);
 
-  // -------- Use transformed values --------
   if (cond2_new) {
     p[0] = c0;
     p[1] = c1;
@@ -54,7 +49,6 @@ __attribute__((noipa)) void foo(char *p, char *q, int r) {
     p[1] = '?';
   }
 
-  // Final semantic validation
   if (cond_base) {
     assert(p[0] == 'a' && p[1] == 'b');
   } else if (cond_alt) {
@@ -71,11 +65,9 @@ int main() {
 
   if (munmap(p + 65536, 65536) < 0) return 0;
 
-  // ✏️ Setup test case with 'a', 'b' at end of first page
   p[65536 - 2] = 'a';
   p[65536 - 1] = 'b';
 
-  // Overwrite initial values (will be replaced if condition matches)
   p[0] = 'X';
   p[1] = 'Y';
 
@@ -84,19 +76,16 @@ int main() {
 
   return 0;
 }
-```
 
 CBMC version: 5.88.0
 Operating system: Ubuntu 22.04, MacOS
 command line: cbmc example.c --pointer-check
 
 What happened:
-```
 line 18 dereference failure: deallocated dynamic object in q[(signed long int)0]: FAILURE
 line 27 dereference failure: deallocated dynamic object in p[(signed long int)0]: FAILURE
-```
+
 But if you comment out the following code in the main function, there are no such FAILURE.
-```
 if (munmap(p + 65536, 65536) < 0) {
     return 0;
 }

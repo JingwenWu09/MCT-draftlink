@@ -1,10 +1,9 @@
 # Bug #8 in CBMC was unconfirmed as a pointer alias related issue. It was exposed by a test case generated using constant propagation transformation.
 
+```
 Me:
 
-```
-Example 1:
-
+//Example 1:
 #include <stdlib.h>
 #include <assert.h>
 
@@ -32,10 +31,8 @@ int main() {
 
     return 0;
 }
-```
-```
-Example 2:
 
+//Example 2:
 #include <stdlib.h>
 #include <assert.h>
 
@@ -72,10 +69,8 @@ int main() {
 
     return 0;
 }
-```
-```
-Example 3:
 
+//Example 3:
 #include <stdlib.h>
 #include <assert.h>
 
@@ -108,10 +103,13 @@ int main() {
 
     return 0;
 }
-```
 
 In these three examples, cbmc gives the FAILURE result in all assertions. 
 
 CBMC version: 5.88.0
 Operating system: Ubuntu 22.04, MacOS
 command line: cbmc example.c
+
+```
+
+

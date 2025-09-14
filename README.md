@@ -9,7 +9,7 @@ The detailed process is illustrated in the figure below.
 
 <img src="./workflow.jpg" alt="Workflow image" width="600" />
 
-We use GCC regression test cases as seed programs (as shown in the [seed_programs](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/seed_programs) folder). 
+We use GCC regression test cases as seed programs (given in the [seed_programs](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/seed_programs) folder). 
 
 # Structure of the project
 
@@ -157,6 +157,7 @@ We evaluate our approach on three mainstream model checkers—CPAchecker, CBMC, 
 In this folder, each file corresponds to one bug. The naming convention follows the format: Number_(ModelChecker)\_(BugCategory)\_(TransformationUsed).
 
 We also distinguish the interaction process using different boxes: "Me" represents our submissions, while "Developer" represents the responses from the developers of the respective model checkers.
+
 
 
 

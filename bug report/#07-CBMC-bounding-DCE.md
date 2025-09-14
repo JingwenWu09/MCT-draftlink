@@ -3,7 +3,7 @@
 ```
 Me:
 
-Example 1:
+// Example 1:
 #include <stdlib.h>
 #include <assert.h>
 
@@ -36,7 +36,7 @@ int main() {
 }
 
 
-Example 2:
+// Example 2:
 #include<assert.h>
 int a[][2][4] = {[2 ... 4][0 ... 1][2 ... 3] = 1, [2] = 2, [2][0][2] = 3};
 int main(void) {

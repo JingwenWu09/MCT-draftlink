@@ -24,31 +24,25 @@ int main() {
   int skip = 0;
 
   if (!((c & 0x10) && (c & 0x4000)) && (c & 2)) skip = 1;
-  if ((c & 0x2000)) skip = 1;
-  if ((c & 0x1408)) skip = 1;
-  if ((c & 0x200))  skip = 1;
-
-  if (skip) return 0;
-
-  if (c & 0x80) {
+  else if ((c & 0x2000)) skip = 1;
+  else if ((c & 0x1408)) skip = 1;
+  else if ((c & 0x200))  skip = 1;
+  else if (c & 0x80) {
     for (int i = 0; i < 5; i++) {
       if (baz3(i)) break;
     }
   }
 
   skip = 0;
-  if ((c & 0x2000)) skip = 1;
-  else if ((c & 0x1408)) skip = 1;
-  else if ((c & 0x200)) skip = 1;
-  else if (!((c & 0x10) && (c & 0x4000)) && (c & 2)) skip = 1;
-
-  if (skip) return 0;
-
   if (c & 0x80) {
     for (int i = 0; i < 5; i++) {
       if (baz3(i)) break;
     }
   }
+  else if ((c & 0x2000)) skip = 1;
+  else if ((c & 0x1408)) skip = 1;
+  else if ((c & 0x200)) skip = 1;
+  else if (!((c & 0x10) && (c & 0x4000)) && (c & 2)) skip = 1;
 
   return 0;
 }

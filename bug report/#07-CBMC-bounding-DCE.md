@@ -1,8 +1,8 @@
 # Bug #7 in CBMC was unconfirmed as a bounding strategy related issue. It was exposed by a test case generated using dead code elimination transformation. 
 
+```
 Me:
 
-```
 Example 1:
 #include <stdlib.h>
 #include <assert.h>

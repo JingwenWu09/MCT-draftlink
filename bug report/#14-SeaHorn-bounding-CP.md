@@ -6,6 +6,7 @@ Me:
 #include "seahorn/seahorn.h"
 int main() {
   int left_DjT[20], left_DjT1[20];
+  int k = 0; i = 0; j = 0;
   while (k < 20) {
     k++;
     if (j > i) {

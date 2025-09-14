@@ -1,7 +1,6 @@
 # Bug #1 in CBMC was confirmed as a language semantics related issue. It was exposed by a test case generated using if-else chain to switch conversion transformation. 
 
 ```
-Original Mutate program:
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -92,7 +91,7 @@ switch (i_1++) {
 assert(i == i_1);
 assert(x == x_1);
 
-// pointerDiffStmt (added)
+// pointerDiffStmt
 assert(labs((char*)&v.h[7] - (char*)&v.h[6]) >= 0);
 
 // abs-related assert
@@ -121,47 +120,9 @@ int main() {
 }
 #endif
 
-```
-```
-Me:
-
-//after reducing
-#include <stdlib.h>
-#include <assert.h>
-
-struct twelve {
-    int a;
-    int b;
-    int c;
-    int d;
-    int e;
-    int f;
-};
-
-void testStruct() {
-    struct twelve a, b;
-    struct twelve *pa = &a;
-    struct twelve *pb = &b;
-    assert(labs((pa-pb) == 0));
-}
-
-void testInt() {
-    int i, a[10];
-    char *pa = (char *)&a;
-    char *pb = (char *)&i;
-    assert(labs((pa-pb) == 0));
-    int j;
-    assert(abs(i) >= 0);
-}
-
-int main() {
-    testInt();
-    testStruct();
-    return 0;
-}
 
 The assert() functions are true, which is confirmed by compiling with gcc and clang, while cbmc
-gives the FAILURE result towards assert(labs(pa-pb) == 0), assert(labs(pa-pb) == 0) and assert(abs(i) >= 0)
+gives the FAILURE result towards assert(labs((char*)&v.h[7] - (char*)&v.h[6]) >= 0) and assert(abs(x - x_1) >= 0)
 which means the assertions are false. abs(i) is always true, why do assertions fail?
 
 CBMC version: 5.88.0

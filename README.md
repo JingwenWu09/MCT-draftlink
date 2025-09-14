@@ -152,4 +152,7 @@ javac Main.java && java Main
 When a verification result diverges from the oracle, the pair `<test-case-path> : <tool-config>` is appended to model-checker-false.txt in the corresponding workflow directory. Inspect that file to reproduce and minimise the failing example before filing an upstream issue.
 
 # Detected Bugs
-We conduct an evaluation of this approach on three mainstream model checkers (i.e., CPAchecker, CBMC, and SeaHorn), successfully detecting 48 unique bugs, 41 of which have been confirmed. Because the public issues we filed in the official repositories contain details that could reveal the authors’ identities, thereby violating the double-blind review policy, we have consolidated all issue records in the [bug report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug%20report) folder.
+We evaluate our approach on three mainstream model checkers—CPAchecker, CBMC, and SeaHorn—and successfully detect 48 unique bugs, 41 of which have been confirmed. The public issues we filed in the official repositories contain details that could reveal the authors’ identities, which would violate the double-blind review policy. To address this, we consolidated all issue records in the [bug_report](https://github.com/Elowen-jjw/MCT-draftlink/tree/main/bug_report) folder. 
+In this folder, each file corresponds to one bug. The naming convention follows the format: Number_(ModelChecker)_(BugCategory)_(TransformationUsed).
+We also distinguish the interaction process using different boxes: Me represents our submissions, while Developer represents the responses from the developers of the respective model checkers.
+

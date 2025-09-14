@@ -14,7 +14,7 @@ We use GCC regression test cases as seed programs.
 # Structure of the project
 
 ```
-Core operations are under the main folder:
+Core operations are under the main folders:
 |-- model_checker_test
 | |-- TestCBMC # CBMC workflow implementation
 | | |-- Main/Main.java # CBMC entry point
@@ -157,6 +157,7 @@ We evaluate our approach on three mainstream model checkers—CPAchecker, CBMC, 
 In this folder, each file corresponds to one bug. The naming convention follows the format: Number_(ModelChecker)\_(BugCategory)\_(TransformationUsed).
 
 We also distinguish the interaction process using different boxes: "Me" represents our submissions, while "Developer" represents the responses from the developers of the respective model checkers.
+
 
 
 

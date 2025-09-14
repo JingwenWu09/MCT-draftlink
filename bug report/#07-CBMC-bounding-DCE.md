@@ -34,15 +34,15 @@ int main() {
 
   return 0;
 }
-```
-```
+
+
 Example 2:
 #include<assert.h>
 int a[][2][4] = {[2 ... 4][0 ... 1][2 ... 3] = 1, [2] = 2, [2][0][2] = 3};
 int main(void) {
 	assert( sizeof(a)/(sizeof(int)*2*4) == 5);
 }
-```
+
 
 In the Example 1, run  cbmc example1.c --bounds-check generate following output results:
 [main.array_bounds.1] array 'a3'.a3p upper bound in a3.a3p[(signed long int)0]: FAILURE
@@ -56,6 +56,10 @@ Is it related that the size of the first dimension is omitted when the array is 
 CBMC version: 5.88.0
 Operating system: Ubuntu 22.04, macOS
 Command line: cbmc example.c
+
+```
+
+
 
 
 

@@ -22,83 +22,81 @@ union U {
   unsigned char i[16];
 };
 volatile union U v = {.f.d = 0x4089};
-volatile union U *v_global_p = &v; //globalVarAnnotation
+volatile union U *v_global_p = &v;
 
 __attribute__((noipa)) void bar(int x) {
   int i=0;
-//storeGlobalVarStmt
-volatile union U v_store = *v_global_p;
-  //renameUseVarStmt
+  volatile union U v_store = *v_global_p;
   int i_1 = i;
   int x_1 = x;
   if ((i++) == 0) {
   if (x != v.f.d) {
     __builtin_abort();
-  }
-} else if ((i++) == 1) {
-  if (x != v.f.e) {
+    }
+  } else if ((i++) == 1) {
+    if (x != v.f.e) {
+      __builtin_abort();
+    }
+  } else if ((i++) == 2) {
+    if (x != v.g[3]) {
+      __builtin_abort();
+    }
+  } else if ((i++) == 3) {
+    if (x != v.h[6]) {
+      __builtin_abort();
+    }
+  } else if ((i++) == 4) {
+    if (x != v.h[7]) {
+      __builtin_abort();
+    }
+  } else {
     __builtin_abort();
   }
-} else if ((i++) == 2) {
-  if (x != v.g[3]) {
-    __builtin_abort();
-  }
-} else if ((i++) == 3) {
-  if (x != v.h[6]) {
-    __builtin_abort();
-  }
-} else if ((i++) == 4) {
-  if (x != v.h[7]) {
-    __builtin_abort();
-  }
-} else {
-  __builtin_abort();
-}
 
-// restore global
-*v_global_p = v_store;
-
-// use backup variable in switch
-switch (i_1++) {
-  case 0:
-    if (x_1 != v.f.d) {
+  // restore global
+  *v_global_p = v_store;
+  
+  // use backup variable in switch
+  switch (i_1++) {
+    case 0:
+      if (x_1 != v.f.d) {
+        __builtin_abort();
+      }
+      break;
+    case 1:
+      if (x_1 != v.f.e) {
+        __builtin_abort();
+      }
+      break;
+    case 2:
+      if (x_1 != v.g[3]) {
+        __builtin_abort();
+      }
+      break;
+    case 3:
+      if (x_1 != v.h[6]) {
+        __builtin_abort();
+      }
+      break;
+    case 4:
+      if (x_1 != v.h[7]) {
+        __builtin_abort();
+      }
+      break;
+    default:
       __builtin_abort();
-    }
-    break;
-  case 1:
-    if (x_1 != v.f.e) {
-      __builtin_abort();
-    }
-    break;
-  case 2:
-    if (x_1 != v.g[3]) {
-      __builtin_abort();
-    }
-    break;
-  case 3:
-    if (x_1 != v.h[6]) {
-      __builtin_abort();
-    }
-    break;
-  case 4:
-    if (x_1 != v.h[7]) {
-      __builtin_abort();
-    }
-    break;
-  default:
-    __builtin_abort();
-    break;
-}
+      break;
+  }
   // conditionStmt
-assert(i == i_1);
-assert(x == x_1);
+  assert(i == i_1);
+  assert(x == x_1);
 
-// pointerDiffStmt
-assert(labs((char*)&v.h[7] - (char*)&v.h[6]) >= 0);
-
-// abs-related assert
-assert(abs(i - i_1) == 0);
-assert(abs(x - x_1) >= 0);
+  // pointerDiffStmt
+  assert(labs((char*)&v.h[7] - (char*)&v.h[6]) >= 0);
+  
+  // abs-related assert
+  assert(abs(i - i_1) == 0);
+  assert(abs(x - x_1) >= 0);
 }
 
 void foo(unsigned int x) {

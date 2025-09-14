@@ -20,7 +20,7 @@ void f2(int *ap, int p) {
 void main() {
   int n = 2;
   f1(arr, n * 8 & 1);
-  f2(brr, n << 3 & 1);
+  f2(brr, n * 8 & 1);
   assert(arr[1] == brr[1]);
 }
 
@@ -28,9 +28,9 @@ int arr[2] = {3, 5};
 int brr[2] = {3, 5};
 
 In this Example, I run cbmc <filename.c> --pointer-check and cbmc gave FAILURE result
-with the message dereference failure: pointer outside object bounds in *a: FAILURE.
+with the message dereference failure: pointer outside object bounds in *arr: FAILURE.
 
-Then I moved this statement int a[2] = {3, 5}; forward to the first line.
+Then I moved this statement ``int arr[2] = {3, 5} and brr[2] = {3, 5}`` forward to the first line.
 And the pointer-check result became SUCCESSFUL.
 Why did pointer-check give different results? Is it releated to the extern keyword?
 Please help me to explain this situation. Thanks.

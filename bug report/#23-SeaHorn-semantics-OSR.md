@@ -1,7 +1,8 @@
 # Bug #12 in SeaHorn was confirmed as a language semantics related issue. It was exposed by a test case generated using operator strength reduction transformation.
 
 ```
-//Original Program (not reduced)
+Me:
+
 #include "seahorn/seahorn.h"
 #include <math.h>
 #include <stdio.h>
@@ -89,50 +90,8 @@ int main() {
   }
   return 0;
 }
-```
 
-```
-Me:
-
-//The simplest form that trigger this bug:
-Example 1:
-#include "seahorn/seahorn.h"
-int main(){
-	int x = 2;
-	int y = 2;
-
-	for(int i=0; i<1; i++){
-		x--;
-	}
-	for(int i=0; i<1; i++){
-		y--;
-	}
-
-	x = x << 32;
-	y = y << 32;
-
-	sassert(x == 0);
-	sassert(y == 0); 
-	sassert(x == y);	
-	return 0;
-}
-
-Example 2:
-
-#include "seahorn/seahorn.h"
-int main(){
-	int si = 0;
-	for(int i=0; i<2147483647; i++){
-		si++;
-	}
-	short sx = si;
-    sassert(sx == -1);
-	sassert(sx != -1);
-
-	return 0;
-}
-
-In these two examples, seahorn gives sat result in the Example 1 and unsat result in the Example 2.
+In this example, seahorn gives sat result.
 Does seahorn have any special treatment for data truncation?
 Does seahorn give the sat result if there is some security issue with the program (e.g., if the length of the shift left is greater than the number of bytes of the data type)?
 That is, sat is not only for __VERIFIER_error.

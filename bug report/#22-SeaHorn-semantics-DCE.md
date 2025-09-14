@@ -2,7 +2,7 @@
 
 ```
 Me
-//Original program (not reduced)
+
 #include "seahorn/seahorn.h"
 
 void dummy(int *x, int y) {
@@ -54,65 +54,17 @@ int main() {
   sassert(cnt0 == cnt01);
   sassert(cnt1 == cnt11);
 
-  sassert(x == x1); // sat
-  sassert(y == y1); // sat
+  sassert(x == x1); //sat
+  sassert(y == y1); //sat
+  sassert(x1 == -2147483648); //sat
+  sassert(y1 == -2147483648); //sat
 
   return 0;
 }
-```
 
-
-```
-Me:
-//The simplest form that trigger this bug:
-
-Example 1:
-#include "seahorn/seahorn.h"
-int main(){
-	int x = 2147483647;
-	int y = 2147483647;
-
-	for(int i=0; i<1; i++){
-		x++;
-	}
-	for(int i=0; i<1; i++){
-		y++;
-	}
-
-	sassert(x == -2147483648);	//sat
-	sassert(y == -2147483648); //sat
-	sassert(x == y);	//sat
-
-	return 0;
-}
-
-
-Example 2:
-#include "seahorn/seahorn.h"
-int main(){	
-	int x = 2147483646;
-	int y = 2147483646;
-
-	for(int i=0; i<2; i++){
-		x++;
-	}
-	for(int i=0; i<2; i++){
-		y++;
-	}
-
-	sassert(x == -2147483648);	//sat
-	sassert(y == -2147483648);  //sat
-	sassert(x == y);	//unsat
-
-	return 0;
-}
-
-In these two examples, the verification result of each "sassert" statement is as stated in the comment.
+In this example, the verification result of each "sassert" statement is as stated in the comment.
 Each assertion should be hold which is confirmed by gcc and clang,
-while seahorn gives some unexpected results. And I have some questions:
-
-Why does sassert(x == y) produce different results in these two examples?
-Why do sassert(x == -2147483648) and sassert(y == -2147483648) both give the sat result?
+while seahorn gives some unexpected results. 
 ```
 ```
 Developer:

@@ -1,0 +1,17 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+struct {
+  int len;
+  char *name;
+} s;
+
+int main(void) {
+  s.len = 0;
+  s.name = "";
+  if (s.name[s.len] != 0) {
+    s.name[s.len] = 0;
+  }
+  return 0;
+}

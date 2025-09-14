@@ -1,0 +1,21 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int a[8];
+__attribute__((noinline)) int t() {
+  int i;
+  for (i = 0; i < 3; i++) {
+    if (a[i]) {
+      break;
+    }
+  }
+  return i;
+}
+int main() {
+  int i;
+  for (i = 0; i < 1000; i++) {
+    t();
+  }
+  return 0;
+}

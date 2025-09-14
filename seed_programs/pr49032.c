@@ -1,0 +1,10 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+static int s = 42;
+
+int main() {
+  int *l[18] = {&s, &s, &s, &s, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  return 0;
+}

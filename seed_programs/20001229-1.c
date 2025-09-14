@@ -1,0 +1,31 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#if defined(__alpha__) && defined(__linux__)
+#include <asm/sysinfo.h>
+#include <asm/unistd.h>
+
+static inline int setsysinfo(unsigned long op, void *buffer, unsigned long size, int *start, void *arg, unsigned long flag) {
+  syscall(__NR_osf_setsysinfo, op, buffer, size, start, arg, flag);
+}
+
+static void __attribute__((constructor)) trap_unaligned(void) {
+  unsigned int buf[2];
+  buf[0] = SSIN_UACPROC;
+  buf[1] = UAC_SIGBUS | UAC_NOPRINT;
+  setsysinfo(SSI_NVPAIRS, buf, 1, 0, 0, 0);
+}
+#endif
+
+void foo(char *a, char *b) {
+}
+
+void showinfo() {
+  char uname[33] = "", tty[38] = "/dev/";
+  foo(uname, tty);
+}
+
+int main() {
+  showinfo();
+  exit(0);
+}

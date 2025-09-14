@@ -1,0 +1,18 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+struct s {
+  char x : 8;
+  unsigned int y : 31;
+} __attribute__((packed));
+
+volatile struct s global;
+
+int main() {
+  global.y = 0x7FFFFFFF;
+  if (global.y != 0x7FFFFFFF) {
+    __builtin_abort();
+  }
+  return 0;
+}

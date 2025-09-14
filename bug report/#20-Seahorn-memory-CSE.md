@@ -1,7 +1,8 @@
 # Bug #9 in SeaHorn was unconfirmed as a memory allocation related issue. It was exposed by a test case generated using common subexpression elimination transformation.
 
-Me:
 ```
+Me:
+
 #include  "seahorn/seahorn.h"
 
 int main() {
@@ -42,7 +43,6 @@ int main() {
   
   return 0;
 }
-```
 
 The purpose of example.c is to fuse two separate loops and keep the value of the variables constant. 
 The two sassert() statements(in line 137 and 140) were used to verify that 
@@ -53,3 +53,4 @@ However, if I kept only one of the two sassert() statements and commented out th
 SeaHorn would give the expected result unsat.
 
 In this case, why keeping one or both of these sassert() statements generated different results?
+```

@@ -21,9 +21,6 @@ int main(void) {
     register char c;
     register char *ep = bp + n;
     register char *sp;
-
-//storeGlobalVarStmt
-    //renameUseVarStmt
     int one_1 = one;
     char * bp_1 =  (char *)&one_1;
     char * ep_1 =  bp_1 + n;
@@ -40,8 +37,8 @@ int main(void) {
       *bp++ = c;
       bp += 2;
     }
-//restoreGlobalVarStmt
-if (bp_1 < ep_1){
+
+  if (bp_1 < ep_1){
     do {
       sp_1 = bp_1 + 3;
       c_1 = *sp_1;
@@ -53,7 +50,7 @@ if (bp_1 < ep_1){
       *bp_1++ = c_1;
       bp_1 += 2;
     }while (bp_1 < ep_1);
-}
+  }
     //conditionStmt
     assert(one == one_1) ;
     assert(c == c_1) ;

@@ -3,6 +3,7 @@
 ```
 Me:
 
+#include  "seahorn/seahorn.h"
 int baz3(int i) {
   int A[1];
   int B[1];

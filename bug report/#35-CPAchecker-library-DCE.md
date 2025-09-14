@@ -2,15 +2,15 @@
 
 ```
 Me:
-//Original mutate (not reduced)
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 int a;
-int *a_global_p = &a; //globalVarAnnotation
+int *a_global_p = &a;
 int c;
-int *c_global_p = &c; //globalVarAnnotation
+int *c_global_p = &c; 
 __attribute__((noinline, noclone)) void foo(int x) {
   if (x == 0) {
     c++;
@@ -19,10 +19,8 @@ __attribute__((noinline, noclone)) void foo(int x) {
 
 int main(int argc, char *argv[]) {
   int j, k, b = 0;
-  //storeGlobalVarStmt
   int c_store = *c_global_p;
   int a_store = *a_global_p;
-  //renameUseVarStmt
   int argc_1 = argc;
   int b_1 = b;
   if (argc == 0) {
@@ -42,7 +40,6 @@ int main(int argc, char *argv[]) {
     abort();
   }
 
-  //restoreGlobalVarStmt
   *c_global_p = c_store;
   *a_global_p = a_store;
   for (j = 0; j < 3; j++) {
@@ -55,16 +52,8 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-```
-```
-Me:
-//The simplest form that trigger this bug:
-int main(int argc, char *argv[]){
-    assert(argc == 1);
-	return 0;
-}
 
-In this example, the assert() functions are both true, which is confirmed by compiling with gcc and clang, while CPAchecker gives the FALSE result which means the assertion is false. Is there no way for CPAchecker to process the relevant information from the external input？
+In this example, the assert() functions are both true, which is confirmed by compiling with gcc and clang, while CPAchecker gives the FALSE result which means the assertion `assert(argc == argc_1)` is false. Is there no way for CPAchecker to process the relevant information from the external input？
 
 Command line:
 scripts/cpa.sh -predicateAnalysis -64 -preprocess -setprop cpa.predicate.ignoreIrrelevantVariables=false <file_name.c>

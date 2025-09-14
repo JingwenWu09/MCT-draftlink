@@ -156,7 +156,8 @@ We evaluate our approach on three mainstream model checkers—CPAchecker, CBMC, 
 
 In this folder, each file corresponds to one bug. The naming convention follows the format: Number_(ModelChecker)\_(BugCategory)\_(TransformationUsed).
 
-We also distinguish the interaction process using different boxes: "Me" represents our submissions, while "Developer" represents the responses from the developers of the respective model checkers.
+We also distinguish the interaction process using different boxes: "Me" represents our bug report submissions, while "Developer" represents the responses from the developers of the respective model checkers. Note: The program submitted in the bug report is the reduced version of the original program.
+
 
 
 

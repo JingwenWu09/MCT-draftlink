@@ -36,7 +36,6 @@ int main() {
     }
   }
 
-  // PGBR
   skip = 0;
   if ((c & 0x2000)) skip = 1;
   else if ((c & 0x1408)) skip = 1;

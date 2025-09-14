@@ -1,8 +1,8 @@
 # Bug #3 in SeaHorn was fixed as a bounding strategy related issue. It was exposed by a test case generated using constant propagation transformation. 
 
 ```
-Me
-//Original mutate (not reduced)
+Me:
+
 #include "seahorn/seahorn.h"
 int main() {
   int left_DjT[20], left_DjT1[20];
@@ -25,39 +25,8 @@ int main() {
   }
   return 0;
 }
-```
 
-```
-Me:
-//The simplest form that triggers this bug.
-Example 1:
-#include "seahorn/seahorn.h"
-int main() {
-    int left_DjT[10];
-    for(int i=0; i<10; i++){
-        left_DjT[i] = 1;
-    }
-    for(int i=0; i<10; i++){
-        sassert(left_DjT[i] == 1);
-    }
-    return 0;
-}
-
-Example 2:
-#include "seahorn/seahorn.h"
-int main() {
-    int left_DjT[20];
-    for(int i=0; i<20; i++){
-        left_DjT[i] = 1;
-    }
-    for(int i=0; i<20; i++){
-        sassert(left_DjT[i] == 1);
-    }
-    return 0;
-}
-
-In the Example 1, the seahorn gives the "unsat" result,
-while it gives the "sat" result in the Example 2.
+In this example, SeaHorn produces a sat result. However, if the sizes of left_DjT and left_DjT1 are reduced to fewer than 10 elements, the result becomes unsat.
 
 Version: seahorn 14.0.0
 OS: ubuntu 22.04

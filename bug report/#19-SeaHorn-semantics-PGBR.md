@@ -3,8 +3,7 @@
 ```
 Me:
 
-example1.c
-
+// example1.c
 #include  "seahorn/seahorn.h"
 struct S {
   unsigned y;
@@ -33,8 +32,8 @@ int main() {
   return 0;
 }
 
-example2.c
 
+//example2.c
 #include  "seahorn/seahorn.h"
 struct S {
   unsigned y;

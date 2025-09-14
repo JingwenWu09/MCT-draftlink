@@ -30,7 +30,7 @@ int brr[2] = {3, 5};
 In this Example, I run cbmc <filename.c> --pointer-check and cbmc gave FAILURE result
 with the message dereference failure: pointer outside object bounds in *arr: FAILURE.
 
-Then I moved this statement ``int arr[2] = {3, 5} and brr[2] = {3, 5}`` forward to the first line.
+Then I moved this statement `int arr[2] = {3, 5}` and `brr[2] = {3, 5}` forward to the first line.
 And the pointer-check result became SUCCESSFUL.
 Why did pointer-check give different results? Is it releated to the extern keyword?
 Please help me to explain this situation. Thanks.

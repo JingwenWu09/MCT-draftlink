@@ -1,9 +1,9 @@
 # Bug #16 in CPAchecker was fixed as a memory allocation related issue. It was exposed by a test case generated using operator strength reduction transformation. 
+
 ```
 Me:
-//Original Mutate (not reduced):
-#include<assert.h>
-#include <math.h>
+
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -60,25 +60,11 @@ int main(void) {
   return 0;
 }
 
-```
-```
-Me:
-
-//The simplest form that triggers this bug:
-int main(void) {
-  char *p;
-  p = "abc";
-  while( *p != 'c'  ){  //source code's smg: false
-    p++;
-  }
-  return 0;
-}
-
 In this case, SMGAnalysis on the latest source code and release version gave different results
 (source code was FALSE and release was TRUE). Here is the Counterexample.1.core.txt of source code.
 
-line 5:	N4 -{while}-> N5
-line 5:	N5 -{[(*p) != 'c']}-> N6
+N4 -{while}-> N5
+N5 -{[*p == '\n']}-> N6
 
 I combined the declaration char *p; and the assignment p = "abc";  to form statement char *p = "abc", to get another one.
 Then SMGAnalysis in both methods gave TRUE results.

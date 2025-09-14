@@ -1,0 +1,28 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+/* { dg-do compile } */
+/* { dg-options "" } */
+/* { dg-skip-if "small alignment" { pdp11-*-* } } */
+
+typedef 
+struct {
+  unsigned long long w[3];
+} UINT192;
+
+UINT192 bid_Kx192[32];	/* { dg-error "size of array element is not a multiple of its alignment" } */
+
+extern void abort (void);
+
+int main()
+{
+  int i = 0;
+  unsigned long x = 0;
+  for (i = 0; i < 32; ++i)
+    bid_Kx192[i].w[1] = i == 1;
+  for (i = 0; i < 32; ++i)
+    x += bid_Kx192[1].w[1];
+  if (x != 32)
+    abort ();
+  return 0;
+}

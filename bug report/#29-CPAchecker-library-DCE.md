@@ -1,5 +1,8 @@
 # Bug #2 in CPAchecker was confirmed as a C standard library related issue. It was exposed by a test case generated using dead code elimination transformation. 
+
 ```
+Me:
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +10,7 @@
 
 main() {
   char *s = ":ab";
-	char *s = arr;
+  char *s = arr;
   char *lim = s + 3;
 
   int tab = ':';
@@ -46,9 +49,10 @@ main() {
       ++ptr_1;
     }
   }
+
   assert(sword == sword_1);
 
-	assert(ptr<lim);
+  assert(ptr<lim);
   if (ptr + schar <= lim) {
     ptr += schar;
   }
@@ -59,54 +63,11 @@ main() {
   exit(0);
 }
 
-```
-```
-Me:
 
-Example 1:
-int main() {
-  char *a = ":ab";
-  char *a_1 = ":ab";
-  int cnt = 0;
-  for (; *a != 0; a++) {
-      cnt++;
-  }
-  
-  int cnt_1 = 0;
-  for (; *a_1 != 0; a_1++) {
-      cnt_1++;
-  }
- 	
-  assert(cnt == cnt_1);
-  return 0;
-}
-
-Example2:
-int main() {
-  char arr[6] = {':','a','b'};
-  char *a = arr;
-
-  char arr_1[6] = {':','a','b'};
-  char *a_1 = arr_1;
-
-  int cnt = 0;
-  for (; *a != 0; a++) {
-    cnt++;
-  }
-  
-  int cnt_1 = 0;
-  for (; *a_1 != 0; a_1++) {
-    cnt_1++;
-  }
- 	
-  assert(cnt == cnt_1);
-  return 0;
-}
-
-For Example1.c, the assert() function is true, which is confirmed by compiling with gcc and clang,
+In this example, the `assert(sword == sword_1)` is true, which is confirmed by compiling with gcc and clang,
 while CPAchecker gave the UNKNOWN verification result.
 
-But after we transformed Example1.c into Example2.c, CPAchecker gave the TRUE verification result.
+But after we transformed `char *s = ":ab"` into `char *s = {':', "a", "b"}`, CPAchecker gave the TRUE verification result.
 Is it related that the pointer variable 'a' points to a string "hello"?
 
 command:
